@@ -1,0 +1,17 @@
+opt_in_rules:
+    - explicit_init
+    - explicit_self
+
+disabled_rules:
+    - force_cast
+    - notification_center_detachment
+
+trailing_whitespace:
+    ignores_empty_lines: true
+
+line_length:
+    warning: 150
+
+excluded:
+    - Carthage
+    - Pods
