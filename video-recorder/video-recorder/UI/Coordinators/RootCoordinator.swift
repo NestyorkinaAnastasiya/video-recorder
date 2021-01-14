@@ -30,10 +30,9 @@ class RootCoordinator: NSObject, Coordinator {
         viewController.viewControllers?.forEach {
             guard let navController = $0 as? UINavigationController,
                   let  viewController = navController.viewControllers.last else { return }
-                
-            let childCoordinator = ChildCoordinator(parent: self, rootViewController: navController)
-                
+            
             if let homeViewController = viewController as? HomeViewController {
+                let childCoordinator = HomeCoordinator(parent: self, rootViewController: navController)
                 homeViewController.viewModel = HomeViewModel(coordinator: childCoordinator)
             }
         }
@@ -46,8 +45,14 @@ extension RootCoordinator: UITabBarControllerDelegate {
         if viewController is RecordViewController {
             
             let viewController = RecordViewController.instantiate()
-            viewController.viewModel = RecordViewModel(coordinator: self)
-            rootNavigationController.present(viewController, animated: true, completion: nil)
+            let navigationController = UINavigationController(rootViewController: viewController)
+            navigationController.modalPresentationStyle = .fullScreen
+            let childCoordinator = RecordCoordinator(parent: self, rootViewController: navigationController)
+            childCoordinator.parent = self
+            
+            viewController.viewModel = RecordViewModel(coordinator: childCoordinator)
+            
+            rootNavigationController.present(navigationController, animated: true, completion: nil)
             
             return false
         }

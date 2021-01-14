@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class RecordViewModel {
-    var coordinator: RootCoordinator?
+    var coordinator: RecordCoordinator?
     
-    init(coordinator: RootCoordinator) {
+    init(coordinator: RecordCoordinator) {
         self.coordinator = coordinator
     }
 }

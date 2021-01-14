@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class ChildCoordinator: Coordinator {
+class HomeCoordinator: Coordinator {
     weak var parent: Coordinator?
     
     var rootNavigationController: UINavigationController?

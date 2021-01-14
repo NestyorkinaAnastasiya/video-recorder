@@ -9,9 +9,9 @@ import Foundation
 import UIKit
 
 class HomeViewModel {
-    var coordinator: ChildCoordinator?
+    var coordinator: HomeCoordinator?
     
-    init(coordinator: ChildCoordinator) {
+    init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
     }
 }

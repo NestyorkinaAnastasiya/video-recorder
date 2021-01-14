@@ -19,9 +19,10 @@
 		6185B50825AEBA650064AC3D /* RootCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B50725AEBA650064AC3D /* RootCoordinator.swift */; };
 		6185B51125AEBAE80064AC3D /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B51025AEBAE80064AC3D /* HomeViewModel.swift */; };
 		6185B51725AEBE5B0064AC3D /* AutoLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B51625AEBE5B0064AC3D /* AutoLoadable.swift */; };
-		6185B52D25AED6570064AC3D /* ChildCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B52C25AED6570064AC3D /* ChildCoordinator.swift */; };
+		6185B52D25AED6570064AC3D /* HomeCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B52C25AED6570064AC3D /* HomeCoordinator.swift */; };
 		6185B53325AEDE7C0064AC3D /* RecordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B53225AEDE7C0064AC3D /* RecordViewController.swift */; };
 		6185B53B25AEDE8B0064AC3D /* RecordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6185B53A25AEDE8B0064AC3D /* RecordViewModel.swift */; };
+		618D110A25B0585E00B6B317 /* RecordCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 618D110925B0585E00B6B317 /* RecordCoordinator.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,9 +61,10 @@
 		6185B50725AEBA650064AC3D /* RootCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootCoordinator.swift; sourceTree = "<group>"; };
 		6185B51025AEBAE80064AC3D /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		6185B51625AEBE5B0064AC3D /* AutoLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoLoadable.swift; sourceTree = "<group>"; };
-		6185B52C25AED6570064AC3D /* ChildCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildCoordinator.swift; sourceTree = "<group>"; };
+		6185B52C25AED6570064AC3D /* HomeCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeCoordinator.swift; sourceTree = "<group>"; };
 		6185B53225AEDE7C0064AC3D /* RecordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewController.swift; sourceTree = "<group>"; };
 		6185B53A25AEDE8B0064AC3D /* RecordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordViewModel.swift; sourceTree = "<group>"; };
+		618D110925B0585E00B6B317 /* RecordCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RecordCoordinator.swift; path = ../../../../../Documents/RecordCoordinator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,7 +176,8 @@
 			children = (
 				6185B50225AEBA3C0064AC3D /* Coordinator.swift */,
 				6185B50725AEBA650064AC3D /* RootCoordinator.swift */,
-				6185B52C25AED6570064AC3D /* ChildCoordinator.swift */,
+				6185B52C25AED6570064AC3D /* HomeCoordinator.swift */,
+				618D110925B0585E00B6B317 /* RecordCoordinator.swift */,
 			);
 			path = Coordinators;
 			sourceTree = "<group>";
@@ -357,13 +360,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				6185B51725AEBE5B0064AC3D /* AutoLoadable.swift in Sources */,
-				6185B52D25AED6570064AC3D /* ChildCoordinator.swift in Sources */,
+				6185B52D25AED6570064AC3D /* HomeCoordinator.swift in Sources */,
 				6185B50325AEBA3C0064AC3D /* Coordinator.swift in Sources */,
 				6185B53B25AEDE8B0064AC3D /* RecordViewModel.swift in Sources */,
 				6185B53325AEDE7C0064AC3D /* RecordViewController.swift in Sources */,
 				6185B51125AEBAE80064AC3D /* HomeViewModel.swift in Sources */,
 				616A5E2C25AC42B40035D18B /* HomeViewController.swift in Sources */,
 				6185B50825AEBA650064AC3D /* RootCoordinator.swift in Sources */,
+				618D110A25B0585E00B6B317 /* RecordCoordinator.swift in Sources */,
 				616A5E2825AC42B40035D18B /* AppDelegate.swift in Sources */,
 				616A5E2A25AC42B40035D18B /* SceneDelegate.swift in Sources */,
 			);
