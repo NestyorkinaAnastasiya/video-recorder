@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-
 class RootCoordinator: NSObject, Coordinator {
     
     weak var parent: Coordinator?
@@ -22,25 +21,20 @@ class RootCoordinator: NSObject, Coordinator {
     }
     
     func start() {
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        guard let viewController = storyboard.instantiateViewController(withIdentifier: "MainTabBarController")
-            as? UITabBarController else { return }
+        let viewController = UITabBarController.instantiate(withIdentifier: "MainTabBarController")
         viewController.delegate = self
         
         rootNavigationController.pushViewController(viewController, animated: true)
         
         // Add childCoordinators
-        if let controllers = viewController.viewControllers {
-            for controller in controllers {
-                guard let navController = controller as? UINavigationController,
-                    let  viewController = navController.viewControllers.last else { return }
+        viewController.viewControllers?.forEach {
+            guard let navController = $0 as? UINavigationController,
+                  let  viewController = navController.viewControllers.last else { return }
                 
-                let childCoordinator = ChildCoordinator(parent: self, rootViewController: navController)
+            let childCoordinator = ChildCoordinator(parent: self, rootViewController: navController)
                 
-                if let homeViewController = viewController as? HomeViewController {
-                    homeViewController.viewModel = HomeViewModel(coordinator: childCoordinator)
-                    
-                }
+            if let homeViewController = viewController as? HomeViewController {
+                homeViewController.viewModel = HomeViewModel(coordinator: childCoordinator)
             }
         }
         
