@@ -11,7 +11,6 @@
         <!--Tab Bar Controller-->
         <scene sceneID="cKa-Fh-3fu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="axR-kt-opX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <tabBarController storyboardIdentifier="MainTabBarController" id="Aa9-qL-NLO" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="dag-FK-hMB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
@@ -23,6 +22,7 @@
                         <segue destination="RqQ-nj-oOJ" kind="relationship" relationship="viewControllers" id="ZOQ-QS-7b1"/>
                     </connections>
                 </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="axR-kt-opX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2699" y="-455"/>
         </scene>
@@ -80,7 +80,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ad6-7J-WKy" userLabel="CameraView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ad6-7J-WKy" userLabel="PreviewView" customClass="PreviewView" customModule="video_recorder" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="44" width="414" height="769"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </view>
@@ -203,6 +203,7 @@
                     <tabBarItem key="tabBarItem" title="record" image="record.circle.fill" catalog="system" id="Odz-Fn-Wg1"/>
                     <connections>
                         <outlet property="allowContainerView" destination="s1b-aa-jzc" id="ECD-Hm-EhQ"/>
+                        <outlet property="previewView" destination="ad6-7J-WKy" id="Nbv-3G-QzG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lHe-0P-TOP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
