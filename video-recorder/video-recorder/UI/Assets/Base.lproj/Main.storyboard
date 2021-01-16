@@ -2,6 +2,7 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -115,7 +116,6 @@
                                         </connections>
                                     </button>
                                 </subviews>
-                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstItem="Gcx-Sx-OvU" firstAttribute="top" secondItem="ewd-N0-vtV" secondAttribute="top" constant="10" id="1IH-Y9-rX3"/>
                                     <constraint firstItem="dDk-HO-ikt" firstAttribute="width" secondItem="Gcx-Sx-OvU" secondAttribute="width" id="DaK-Wy-4iS"/>
@@ -170,7 +170,18 @@
                                     <constraint firstItem="YNc-JP-Yz4" firstAttribute="centerX" secondItem="s1b-aa-jzc" secondAttribute="centerX" id="dpe-XD-TVk"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5pH-SF-gpn">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cJz-lq-zJK" userLabel="switchCameraButton">
+                                <rect key="frame" x="354" y="64" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="40" id="4TV-X1-XAL"/>
+                                    <constraint firstAttribute="width" secondItem="cJz-lq-zJK" secondAttribute="height" multiplier="1:1" id="chu-CU-Y2m"/>
+                                </constraints>
+                                <state key="normal" image="arrow.triangle.2.circlepath.camera.fill" catalog="system"/>
+                                <connections>
+                                    <action selector="didTapSwichCameraButton:" destination="RqQ-nj-oOJ" eventType="touchUpInside" id="kgw-z8-Z4p"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5pH-SF-gpn" userLabel="closeButton">
                                 <rect key="frame" x="20" y="64" width="40" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="40" id="Hvl-05-NQL"/>
@@ -192,6 +203,8 @@
                             <constraint firstItem="5pH-SF-gpn" firstAttribute="top" secondItem="VpH-Qr-e5D" secondAttribute="top" constant="20" id="I29-1D-XCU"/>
                             <constraint firstItem="ad6-7J-WKy" firstAttribute="leading" secondItem="VpH-Qr-e5D" secondAttribute="leading" id="IVa-dh-qvg"/>
                             <constraint firstItem="ewd-N0-vtV" firstAttribute="leading" secondItem="VpH-Qr-e5D" secondAttribute="leading" id="Knq-PX-Ztc"/>
+                            <constraint firstItem="VpH-Qr-e5D" firstAttribute="trailing" secondItem="cJz-lq-zJK" secondAttribute="trailing" constant="20" id="VBU-II-ymn"/>
+                            <constraint firstItem="cJz-lq-zJK" firstAttribute="top" secondItem="VpH-Qr-e5D" secondAttribute="top" constant="20" id="bdd-3A-ou0"/>
                             <constraint firstItem="s1b-aa-jzc" firstAttribute="trailing" secondItem="VpH-Qr-e5D" secondAttribute="trailing" id="dPk-su-4Df"/>
                             <constraint firstItem="s1b-aa-jzc" firstAttribute="bottom" secondItem="VpH-Qr-e5D" secondAttribute="bottom" id="ebB-pg-0a2"/>
                             <constraint firstItem="ad6-7J-WKy" firstAttribute="trailing" secondItem="VpH-Qr-e5D" secondAttribute="trailing" id="efc-oE-QGD"/>
@@ -212,6 +225,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrow.triangle.2.circlepath.camera.fill" catalog="system" width="128" height="94"/>
         <image name="checkmark" catalog="system" width="128" height="114"/>
         <image name="clear" catalog="system" width="128" height="114"/>
         <image name="house.fill" catalog="system" width="128" height="106"/>

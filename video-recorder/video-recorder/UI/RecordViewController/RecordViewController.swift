@@ -13,7 +13,8 @@ class RecordViewController: UIViewController, AutoLoadable {
     var viewModel: RecordViewModel!
     private let captureSession = AVCaptureSession()
     private var videoDeviceInput: AVCaptureDeviceInput?
-    private var currentPosition = AVCaptureDevice.Position.unspecified
+    private var videoOutput: AVCaptureMovieFileOutput!
+    private var currentPosition = AVCaptureDevice.Position.back
     private var preferredPosition = AVCaptureDevice.Position.back
     private var preferredDeviceType = AVCaptureDevice.DeviceType.builtInDualCamera
     private let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInTrueDepthCamera,
@@ -28,13 +29,13 @@ class RecordViewController: UIViewController, AutoLoadable {
     override func viewDidLoad() {
         super.viewDidLoad()
         previewView.videoPreviewLayer.session = captureSession
+        navigationController?.navigationBar.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
         
         checkVideoAccess()
-        checkMicrophoneAccess()
         
         // for interruptions such as phone calls, notifications from other apps, and music playback
         NotificationCenter.default.addObserver(self,
@@ -45,6 +46,10 @@ class RecordViewController: UIViewController, AutoLoadable {
                                                selector: #selector(sessionInterruptionEnded),
                                                name: .AVCaptureSessionInterruptionEnded,
                                                object: captureSession)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(sessionRuntimeError),
+                                               name: .AVCaptureSessionRuntimeError,
+                                               object: captureSession)
     }
     
     @IBAction func didTapCloseButton(_ sender: Any) {
@@ -52,7 +57,10 @@ class RecordViewController: UIViewController, AutoLoadable {
     }
     
     @IBAction func didTapRecordButton(_ sender: Any) {
-        
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let fileUrl = paths[0].appendingPathComponent("output.mov")
+        try? FileManager.default.removeItem(at: fileUrl)
+        videoOutput.startRecording(to: fileUrl, recordingDelegate: self)
     }
     
     @IBAction func didTapCheckButton(_ sender: Any) {
@@ -66,6 +74,10 @@ class RecordViewController: UIViewController, AutoLoadable {
     @IBAction func didTapAllowMicrophoneButton(_ sender: Any) {
         openSettings()
     }
+    
+    @IBAction func didTapSwichCameraButton(_ sender: Any) {
+        switchCamera()
+    }
 }
 
 // MARK: session functions
@@ -76,11 +88,15 @@ private extension RecordViewController {
         configureCameraForHighestFrameRate(device: videoDevice)
         videoDeviceInput = try? AVCaptureDeviceInput(device: videoDevice)
         guard let videoDeviceInput = videoDeviceInput,
-              captureSession.canAddInput(videoDeviceInput) else { return }
+              captureSession.canAddInput(videoDeviceInput),
+              let audioDeviceInput = AVCaptureDevice.default(for: AVMediaType.audio),
+              let audioInput = try? AVCaptureDeviceInput(device: audioDeviceInput),
+              captureSession.canAddInput(audioInput) else { return }
         
         captureSession.addInput(videoDeviceInput)
+        captureSession.addInput(audioInput)
         
-        let videoOutput = AVCaptureMovieFileOutput()
+        videoOutput = AVCaptureMovieFileOutput()
         guard captureSession.canAddOutput(videoOutput) else { return }
         captureSession.sessionPreset = .high
         captureSession.addOutput(videoOutput)
@@ -137,11 +153,10 @@ private extension RecordViewController {
         var bestFrameRateRange: AVFrameRateRange?
 
         for format in device.formats {
-            for range in format.videoSupportedFrameRateRanges {
-                if range.maxFrameRate > bestFrameRateRange?.maxFrameRate ?? 0 {
-                    bestFormat = format
-                    bestFrameRateRange = range
-                }
+            for range in format.videoSupportedFrameRateRanges where
+                range.maxFrameRate > bestFrameRateRange?.maxFrameRate ?? 0 {
+                bestFormat = format
+                bestFrameRateRange = range
             }
         }
         
@@ -183,6 +198,36 @@ private extension RecordViewController {
     @objc func sessionInterruptionEnded() {
         
     }
+    
+    @objc func sessionRuntimeError() {
+        // If media services were reset, and the last start succeeded, restart the session.
+        /*if error.code == .mediaServicesWereReset {
+            sessionQueue.async {
+                if self.isSessionRunning {
+                    self.session.startRunning()
+                    self.isSessionRunning = self.session.isRunning
+                } else {
+                    DispatchQueue.main.async {
+                        self.resumeButton.isHidden = false
+                    }
+                }
+            }
+        } else {
+            resumeButton.isHidden = false
+        }*/
+    }
+}
+
+extension RecordViewController: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo fileURL: URL, from connections: [AVCaptureConnection]) {
+        
+    }
+    
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        
+    }
+    
+    
 }
 
 extension RecordViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -196,12 +241,11 @@ private extension RecordViewController {
     func checkVideoAccess() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized: // The user has previously granted access to the camera.
-            //self.setupCaptureSession()
-            break
+            self.checkMicrophoneAccess()
         case .notDetermined: // The user has not yet been asked for camera access.
             AVCaptureDevice.requestAccess(for: .video) { granted in
                 if granted {
-                    
+                    self.checkMicrophoneAccess()
                 } else {
                     DispatchQueue.main.async {
                         self.dismiss(animated: true, completion: nil)
@@ -222,12 +266,17 @@ private extension RecordViewController {
     func checkMicrophoneAccess() {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
         case .authorized: // The user has previously granted access to the camera.
-            //self.setupCaptureSession()
-            break
+            self.configSession()
+            DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+                guard let self = self else { return }
+                self.captureSession.startRunning()
+            }
+            self.captureSession.startRunning()
         case .notDetermined: // The user has not yet been asked for camera access.
             AVCaptureDevice.requestAccess(for: .audio) { granted in
                 if granted {
-                    
+                    self.configSession()
+                    self.captureSession.startRunning()
                 } else {
                     DispatchQueue.main.async {
                         self.dismiss(animated: true, completion: nil)

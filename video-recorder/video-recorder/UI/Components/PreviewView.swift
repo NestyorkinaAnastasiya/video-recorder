@@ -16,6 +16,9 @@ class PreviewView: UIView {
     
     /// Convenience wrapper to get layer as its statically known type.
     var videoPreviewLayer: AVCaptureVideoPreviewLayer {
-        return layer as! AVCaptureVideoPreviewLayer
+        let videoLayer = layer as! AVCaptureVideoPreviewLayer
+        videoLayer.videoGravity = .resizeAspectFill
+        videoLayer.connection?.videoOrientation = .portrait
+        return videoLayer
     }
 }
