@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6166712F25B1896D0035C1C3 /* PreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6166712E25B1896D0035C1C3 /* PreviewView.swift */; };
+		6167B97225B8374F00C9E194 /* VideoCompositionWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6167B97125B8374F00C9E194 /* VideoCompositionWriter.swift */; };
 		616A5E2825AC42B40035D18B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616A5E2725AC42B40035D18B /* AppDelegate.swift */; };
 		616A5E2A25AC42B40035D18B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616A5E2925AC42B40035D18B /* SceneDelegate.swift */; };
 		616A5E2C25AC42B40035D18B /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 616A5E2B25AC42B40035D18B /* HomeViewController.swift */; };
@@ -45,6 +46,7 @@
 
 /* Begin PBXFileReference section */
 		6166712E25B1896D0035C1C3 /* PreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewView.swift; sourceTree = "<group>"; };
+		6167B97125B8374F00C9E194 /* VideoCompositionWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositionWriter.swift; sourceTree = "<group>"; };
 		616A5E2425AC42B40035D18B /* video-recorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "video-recorder.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		616A5E2725AC42B40035D18B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		616A5E2925AC42B40035D18B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -102,6 +104,14 @@
 			path = Components;
 			sourceTree = "<group>";
 		};
+		6167B97025B8366100C9E194 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6167B97125B8374F00C9E194 /* VideoCompositionWriter.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		616A5E1B25AC42B40035D18B = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +137,7 @@
 		616A5E2625AC42B40035D18B /* video-recorder */ = {
 			isa = PBXGroup;
 			children = (
+				6167B97025B8366100C9E194 /* Services */,
 				616A5E5A25AC42C30035D18B /* Model */,
 				616A5E5B25AC42CA0035D18B /* UI */,
 				616A5E3525AC42B60035D18B /* Info.plist */,
@@ -374,6 +385,7 @@
 				6185B52D25AED6570064AC3D /* HomeCoordinator.swift in Sources */,
 				6185B50325AEBA3C0064AC3D /* Coordinator.swift in Sources */,
 				6185B53B25AEDE8B0064AC3D /* RecordViewModel.swift in Sources */,
+				6167B97225B8374F00C9E194 /* VideoCompositionWriter.swift in Sources */,
 				6185B53325AEDE7C0064AC3D /* RecordViewController.swift in Sources */,
 				6166712F25B1896D0035C1C3 /* PreviewView.swift in Sources */,
 				6185B51125AEBAE80064AC3D /* HomeViewModel.swift in Sources */,

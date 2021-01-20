@@ -217,6 +217,7 @@
                     <connections>
                         <outlet property="allowContainerView" destination="s1b-aa-jzc" id="ECD-Hm-EhQ"/>
                         <outlet property="previewView" destination="ad6-7J-WKy" id="Nbv-3G-QzG"/>
+                        <outlet property="timeLabel" destination="Ji6-Lw-AJ5" id="tuq-FN-tvi"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lHe-0P-TOP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

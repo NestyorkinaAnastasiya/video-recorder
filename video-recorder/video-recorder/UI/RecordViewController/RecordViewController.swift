@@ -8,12 +8,19 @@
 import Foundation
 import UIKit
 import AVFoundation
+import Photos
+
+enum CaptureState {
+    case idle, start, capturing, end
+}
 
 class RecordViewController: UIViewController, AutoLoadable {
     var viewModel: RecordViewModel!
+    private var captureState: CaptureState = .idle
     private let captureSession = AVCaptureSession()
     private var videoDeviceInput: AVCaptureDeviceInput?
-    private var videoOutput: AVCaptureMovieFileOutput!
+    private var videoOutput: AVCaptureVideoDataOutput!
+    private var audioOutput: AVCaptureAudioDataOutput!
     private var currentPosition = AVCaptureDevice.Position.back
     private var preferredPosition = AVCaptureDevice.Position.back
     private var preferredDeviceType = AVCaptureDevice.DeviceType.builtInDualCamera
@@ -23,8 +30,18 @@ class RecordViewController: UIViewController, AutoLoadable {
                                                                     mediaType: .video,
                                                                     position: .unspecified)
     
+    // values for recording clips
+    private var assetWriter: AVAssetWriter!
+    private var assetWriterInput: AVAssetWriterInput!
+    private var adaptor: AVAssetWriterInputPixelBufferAdaptor?
+    private var filename = ""
+    var clips: [String] = []
+    
+    private var time: Double = 0
+    
     @IBOutlet private weak var allowContainerView: UIView!
-    @IBOutlet weak var previewView: PreviewView!
+    @IBOutlet private weak var previewView: PreviewView!
+    @IBOutlet private weak var timeLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,14 +74,20 @@ class RecordViewController: UIViewController, AutoLoadable {
     }
     
     @IBAction func didTapRecordButton(_ sender: Any) {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        let fileUrl = paths[0].appendingPathComponent("output.mov")
-        try? FileManager.default.removeItem(at: fileUrl)
-        videoOutput.startRecording(to: fileUrl, recordingDelegate: self)
+        switch captureState {
+        case .idle:
+            captureState = .start
+           /* try? FileManager.default.removeItem(at: url)
+            videoOutput.startRecording(to: url, recordingDelegate: self)*/
+        case .capturing:
+            captureState = .end
+        default: break
+            /*videoOutput.stopRecording()*/
+        }
     }
     
     @IBAction func didTapCheckButton(_ sender: Any) {
-        
+        mergeSegmentsAndUpload(clips: clips)
     }
     
     @IBAction func didTapAllowCameraButton(_ sender: Any) {
@@ -96,11 +119,13 @@ private extension RecordViewController {
         captureSession.addInput(videoDeviceInput)
         captureSession.addInput(audioInput)
         
-        videoOutput = AVCaptureMovieFileOutput()
+        videoOutput = AVCaptureVideoDataOutput()
         guard captureSession.canAddOutput(videoOutput) else { return }
         captureSession.sessionPreset = .high
         captureSession.addOutput(videoOutput)
         captureSession.commitConfiguration()
+        
+        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue.global())
     }
     
     func switchCamera() {
@@ -226,13 +251,112 @@ extension RecordViewController: AVCaptureFileOutputRecordingDelegate {
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         
     }
-    
-    
 }
 
 extension RecordViewController: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        
+        let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer).seconds
+        switch captureState {
+        case .start:
+            startRecord(timestamp: timestamp)
+        case .capturing:
+            let seconds = timestamp - self.time
+            if assetWriterInput?.isReadyForMoreMediaData == true {
+                // Append the sample buffer at the correct time
+                let time = CMTime(seconds: seconds, preferredTimescale: CMTimeScale(600))
+                adaptor?.append(CMSampleBufferGetImageBuffer(sampleBuffer)!, withPresentationTime: time)
+            }
+            DispatchQueue.main.async {
+                self.timeLabel.text = self.viewModel.timeString(seconds: Int(seconds))
+            }
+        case .end:
+            // When we have finished recording, finish writing the video data to disk
+            guard assetWriterInput?.isReadyForMoreMediaData == true, assetWriter!.status != .failed else { break }
+            assetWriterInput?.markAsFinished()
+            assetWriter?.finishWriting { [weak self] in
+                guard let self = self else { return }
+                // Move to the idle state once we are done writing
+                self.captureState = .idle
+                self.assetWriter = nil
+                self.assetWriterInput = nil
+                DispatchQueue.main.async {
+                    // Stop animating the record button
+                    //self.stopAnimatingRecordButton()
+                }
+            }
+        case .idle:
+            DispatchQueue.main.async {
+                //self.stopAnimatingRecordButton()
+            }
+        }
+    }
+}
+
+// MARK: record functions
+private extension RecordViewController {
+    func startRecord(timestamp: Double) {
+        // Create a new filename for this clip
+        filename = UUID().uuidString
+        // Create the AVAssetWriter that will write the video data to the output file
+        if let videoPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+            .first?.appendingPathComponent("\(filename).mov"),
+           let writer = try? AVAssetWriter(outputURL: videoPath, fileType: .mov),
+           let settings = videoOutput?.recommendedVideoSettingsForAssetWriter(writingTo: .mov) {
+            // Animate the record button and start playing the chosen audio track
+            DispatchQueue.main.async {
+                //self.animateRecordButton()
+            }
+            
+            // Keep track of all the clips that will be included in the final video
+            clips.append("\(filename).mov")
+            
+            // AVAssetWriterInput is used to append media samples to a single track of the asset writer's output file.
+            let input = AVAssetWriterInput(mediaType: .video, outputSettings: settings)
+            input.mediaTimeScale = CMTimeScale(bitPattern: 600)
+            input.expectsMediaDataInRealTime = true
+            input.transform = CGAffineTransform(rotationAngle: .pi / 2)
+            
+            adaptor = AVAssetWriterInputPixelBufferAdaptor(assetWriterInput: input, sourcePixelBufferAttributes: nil)
+            
+            // Use a buffer to append video samples packaged as pixel buffers to the AVAssetWriterInput
+            if writer.canAdd(input) {
+                writer.add(input)
+            }
+            // Start writing to disk
+            let startingTimeDelay = CMTimeMakeWithSeconds(0.5, preferredTimescale: 1_000_000_000)
+            writer.startWriting()
+            writer.startSession(atSourceTime: .zero + startingTimeDelay)
+            
+            assetWriter = writer
+            assetWriterInput = input
+            
+            captureState = .capturing
+            // Keep track of the earliest timestamp of all the samples when we started writing
+            time = timestamp
+        }
+    }
+    
+    func mergeSegmentsAndUpload(clips _: [String]) {
+        DispatchQueue.main.async {
+            if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                VideoCompositionWriter.mergeVideos(dir, filename: "\(self.filename).mov", clips: self.clips) { success, outUrl in
+                    if success, let url = outUrl {
+                        PHPhotoLibrary.shared().performChanges({
+                            let options = PHAssetResourceCreationOptions()
+                            options.shouldMoveFile = true
+                            let creationRequest = PHAssetCreationRequest.forAsset()
+                            creationRequest.addResource(with: .video, fileURL: url, options: options)
+                        }, completionHandler: { success, error in
+                            if !success {
+                                print("AVCam couldn't save the movie to your photo library: \(String(describing: error))")
+                            }
+                        })
+                    }
+                }
+            }
+            //self.stopAnimatingRecordButton()
+            self.dismiss(animated: true, completion: nil)
+        }
     }
 }
 
@@ -247,6 +371,7 @@ private extension RecordViewController {
                 if granted {
                     self.checkMicrophoneAccess()
                 } else {
+                    
                     DispatchQueue.main.async {
                         self.dismiss(animated: true, completion: nil)
                         
